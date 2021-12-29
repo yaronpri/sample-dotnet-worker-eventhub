@@ -3,12 +3,18 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.810.8
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Keda.Samples.DotNet.EventHub.OrderProcessor", "Keda.Samples.DotNet.EventHub.OrderProcessor\Keda.Samples.DotNet.EventHub.OrderProcessor.csproj", "{B9C2A917-5E91-4E35-91AB-E2C52DACA263}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B9C2A917-5E91-4E35-91AB-E2C52DACA263}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9C2A917-5E91-4E35-91AB-E2C52DACA263}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9C2A917-5E91-4E35-91AB-E2C52DACA263}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9C2A917-5E91-4E35-91AB-E2C52DACA263}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
