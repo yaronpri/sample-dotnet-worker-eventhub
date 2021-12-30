@@ -24,15 +24,14 @@ namespace Keda.Samples.Dotnet.EventHub.OrderProcessor
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            var queueName = Configuration.GetValue<string>("KEDA_SERVICEBUS_QUEUE_NAME");
+        {            
             var eventHubProcessor = GetEventHubProcessor();
             eventHubProcessor.ProcessEventAsync += HandleEventAsync;
             eventHubProcessor.ProcessErrorAsync += HandleReceivedExceptionAsync;
 
             Logger.LogInformation($"Starting {eventHubProcessor.ConsumerGroup} consumer group in eventhub {eventHubProcessor.FullyQualifiedNamespace}");
             await eventHubProcessor.StartProcessingAsync(stoppingToken);
-            Logger.LogInformation("Message pump started");
+            Logger.LogInformation("Events listener started");
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -74,15 +73,16 @@ namespace Keda.Samples.Dotnet.EventHub.OrderProcessor
         private async Task HandleEventAsync(ProcessEventArgs processEventArgs)
         {
             try
-            {
+            {               
                 var rawMessageBody = Encoding.UTF8.GetString(processEventArgs.Data.Body.ToArray());
                 Logger.LogInformation("Received event {MessageId} with body {MessageBody}",
                     processEventArgs.Data.MessageId, rawMessageBody);
 
+                //var t = (TMessage)Convert.ChangeType(rawMessageBody, typeof(TMessage));
                 var order = JsonConvert.DeserializeObject<TMessage>(rawMessageBody);
                 if (order != null)
                 {
-                    await ProcessEvent(order, processEventArgs.Data.MessageId,
+                    await ProcessEvent(order, processEventArgs.Data.SequenceNumber.ToString(),
                         processEventArgs.Data.Properties,
                         processEventArgs.CancellationToken);
                 }
@@ -102,7 +102,7 @@ namespace Keda.Samples.Dotnet.EventHub.OrderProcessor
                 Logger.LogError(ex, "Unable to handle message");
             }
         }
-
+        
         private Task HandleReceivedExceptionAsync(ProcessErrorEventArgs exceptionEvent)
         {
             Logger.LogError(exceptionEvent.Exception, "Unable to process message");

@@ -9,14 +9,14 @@ using Microsoft.Extensions.Logging;
 
 namespace Keda.Samples.DotNet.EventHub.OrderProcessor
 {
-    public class OrdersQueueProcessor : EventsWorker<Order>
+    public class OrdersEventProcessor : EventsWorker<Order>
     {
-        public OrdersQueueProcessor(IConfiguration configuration, ILogger<OrdersQueueProcessor> logger)
+        public OrdersEventProcessor(IConfiguration configuration, ILogger<OrdersEventProcessor> logger)
             : base(configuration, logger)
         {
         }
 
-        protected override async Task ProcessEvent(Order order, string messageId, IEnumerable<KeyValuePair<string, object>> userProperties, CancellationToken cancellationToken)
+        protected override async Task ProcessEvent(Order order, string sequenceId, IEnumerable<KeyValuePair<string, object>> userProperties, CancellationToken cancellationToken)
         {
             Logger.LogInformation("Processing order {OrderId} for {OrderAmount} units of {OrderArticle} bought by {CustomerFirstName} {CustomerLastName}", order.Id, order.Amount, order.ArticleNumber, order.Customer.FirstName, order.Customer.LastName);
 
@@ -24,5 +24,5 @@ namespace Keda.Samples.DotNet.EventHub.OrderProcessor
 
             Logger.LogInformation("Order {OrderId} processed", order.Id);
         }
-    }
+    }    
 }
