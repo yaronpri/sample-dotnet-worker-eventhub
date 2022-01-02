@@ -5,6 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Azure.Messaging.EventHubs;
 using Azure.Messaging.EventHubs.Processor;
+using Keda.Samples.DotNet.EventHub.Contracts;
+using Keda.Samples.DotNet.EventHub.OrderProcessor;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -16,6 +18,7 @@ namespace Keda.Samples.Dotnet.EventHub.OrderProcessor
     {
         protected ILogger<EventsWorker<TMessage>> Logger { get; }
         protected IConfiguration Configuration { get; }
+        private static int counter = 0;
 
         protected EventsWorker(IConfiguration configuration, ILogger<EventsWorker<TMessage>> logger)
         {
@@ -72,34 +75,68 @@ namespace Keda.Samples.Dotnet.EventHub.OrderProcessor
 
         private async Task HandleEventAsync(ProcessEventArgs processEventArgs)
         {
+            var messageId = Guid.NewGuid().ToString(); //generating GUID as message ID is null
+            counter++; //just for record
             try
-            {               
+            {
                 var rawMessageBody = Encoding.UTF8.GetString(processEventArgs.Data.Body.ToArray());
-                Logger.LogInformation("Received event {MessageId} with body {MessageBody}",
-                    processEventArgs.Data.MessageId, rawMessageBody);
+                
+                processEventArgs.Data.MessageId = messageId;
 
-                //var t = (TMessage)Convert.ChangeType(rawMessageBody, typeof(TMessage));
-                var order = JsonConvert.DeserializeObject<TMessage>(rawMessageBody);
-                if (order != null)
+                DateTime before = DateTime.Now;
+                Logger.LogInformation("Received event num. {Counter} {MessageId} -------------- at {TimeStarted}", counter, processEventArgs.Data.MessageId, GetTimeWithMileseconds(before));
+
+                Type itemType = typeof(TMessage);               
+                if (itemType == typeof(Order))
                 {
-                    await ProcessEvent(order, processEventArgs.Data.SequenceNumber.ToString(),
-                        processEventArgs.Data.Properties,
-                        processEventArgs.CancellationToken);
+                    var order = JsonConvert.DeserializeObject<TMessage>(rawMessageBody);
+
+                    if (order != null)
+                    {
+                        await ProcessEvent(order, messageId,
+                            processEventArgs.Data.Properties,
+                            processEventArgs.CancellationToken);
+                    }
+                    else
+                    {
+                        Logger.LogError(
+                            "Unable to deserialize to contract {ContractName} for event {MessageBody}",
+                            typeof(TMessage), rawMessageBody);
+                    }
                 }
                 else
                 {
-                    Logger.LogError(
-                        "Unable to deserialize to contract {ContractName} for event {MessageBody}",
-                        typeof(TMessage), rawMessageBody);
-                }
-
-                Logger.LogInformation("Event {MessageId} processed", processEventArgs.Data.MessageId);
+                    if (itemType == typeof(string))
+                    {
+                        var message = (TMessage)Convert.ChangeType(rawMessageBody, typeof(TMessage));
+                        if (message != null)
+                        {
+                            await ProcessEvent(message, messageId,
+                                processEventArgs.Data.Properties,
+                                processEventArgs.CancellationToken);
+                        }
+                        else
+                        {
+                            Logger.LogError(
+                                "Unable to deserialize to contract {ContractName} for event {MessageBody}",
+                                typeof(TMessage), rawMessageBody);
+                        }
+                    }
+                    else
+                    {
+                        Logger.LogError(
+                            "Not supported type contract {ContractName} for event {MessageBody}",
+                            typeof(TMessage), rawMessageBody);
+                    }
+                }                
+                DateTime after = DateTime.Now;
+                Logger.LogInformation("Completed event num. {Counter} - id {MessageId} - took {TimeProcessed} ms at {TimeCompleted}", counter, processEventArgs.Data.MessageId, after.Subtract(before).Milliseconds, GetTimeWithMileseconds(after));
 
                 await processEventArgs.UpdateCheckpointAsync(processEventArgs.CancellationToken);
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Unable to handle message");
+                Logger.LogError(ex, $"Unable to handle message {messageId}");
             }
         }
         
@@ -107,6 +144,15 @@ namespace Keda.Samples.Dotnet.EventHub.OrderProcessor
         {
             Logger.LogError(exceptionEvent.Exception, "Unable to process message");
             return Task.CompletedTask;
+        }
+
+        private string GetTimeWithMileseconds(DateTime input)
+        {
+            StringBuilder retVal = new StringBuilder();
+            retVal.Append(input.ToLongTimeString());
+            retVal.Append(":");
+            retVal.Append(input.Millisecond);
+            return retVal.ToString();
         }
 
         protected abstract Task ProcessEvent(TMessage order, string messageId, IEnumerable<KeyValuePair<string, object>> userProperties, CancellationToken cancellationToken);

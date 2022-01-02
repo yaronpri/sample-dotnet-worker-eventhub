@@ -16,13 +16,13 @@ namespace Keda.Samples.DotNet.EventHub.OrderProcessor
         {
         }
 
-        protected override async Task ProcessEvent(Order order, string sequenceId, IEnumerable<KeyValuePair<string, object>> userProperties, CancellationToken cancellationToken)
+        protected override async Task ProcessEvent(Order order, string messageId, IEnumerable<KeyValuePair<string, object>> userProperties, CancellationToken cancellationToken)
         {
-            Logger.LogInformation("Processing order {OrderId} for {OrderAmount} units of {OrderArticle} bought by {CustomerFirstName} {CustomerLastName}", order.Id, order.Amount, order.ArticleNumber, order.Customer.FirstName, order.Customer.LastName);
+            //Logger.LogInformation("Message Id {MessageId} - Processing order {OrderId} for {OrderAmount} units of {OrderArticle} bought by {CustomerFirstName} {CustomerLastName}", messageId, order.Id, order.Amount, order.ArticleNumber, order.Customer.FirstName, order.Customer.LastName);
 
-            await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
+            await Task.Delay(TimeSpan.FromMilliseconds(200), cancellationToken);
 
-            Logger.LogInformation("Order {OrderId} processed", order.Id);
+            //Logger.LogInformation("Message Id {MessageId} - Processed Order {OrderId} ", messageId, order.Id);
         }
     }    
 }
