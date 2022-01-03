@@ -14,7 +14,7 @@ spec:
     metadata:
       connectionFromEnv: "EVENTHUB_FULL_CONNECTIONSTRING"
       storageConnectionFromEnv: "BLOB_CHECKPOINT_CONNECTIONSTRING"
-      consumerGroup: "$Default"
+      consumerGroup: "<REPLACE: CONSUMER GROUP>"
       unprocessedEventThreshold: "64"
-      blobContainer: "checkpointnew"
+      blobContainer: "<REPLACE: CONTAINER NAME>"
       checkpointStrategy: "blobMetadata"

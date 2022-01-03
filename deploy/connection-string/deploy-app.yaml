@@ -20,16 +20,16 @@ spec:
         - name: GLOBAL_AUTH_MODE
           value: "ConnectionString"
         - name: EVENTHUB_CONSUMERGROUP
-          value: "<CONSUMER GROUP NAME>"
+          value: "<REPLACE: CONSUMER GROUP NAME>"
         - name: EVENTHUB_NAME
-          value: "<EVENTHUB NAME>"
+          value: "<REPLACE: EVENTHUB NAME>"
         - name: EVENTHUB_CONNECTIONSTRING
           valueFrom:
             secretKeyRef:
              name: secrets-event-consumer
              key: eventhub-connectionstring
         - name: BLOB_CHECKPOINT_CONTAINERNAME
-          value: "<BLOB CONTAINER NAME>"
+          value: "<REPLACE: BLOB CONTAINER NAME>"
         - name: BLOB_CHECKPOINT_CONNECTIONSTRING
           valueFrom:
             secretKeyRef:
@@ -39,7 +39,7 @@ spec:
           valueFrom:
             secretKeyRef:
               name: secrets-event-consumer
-              key: blob-checkpoint-full-connectionstring
+              key: eventhub-checkpoint-full-connectionstring
 ---
 apiVersion: v1
 kind: Secret
@@ -48,6 +48,6 @@ metadata:
   labels:
     app: event-processor
 data:
-  eventhub-connectionstring: <BASE64 connection string>
-  blob-checkpoint-connectionstring: <BASE64 connection string>
-  blob-checkpoint-full-connectionstring: <BASE64 eventhub connection string with appended string ;EntityPath=EVENTHUB_NAME>
+  eventhub-connectionstring: <REPLACE BASE64 connection string>
+  blob-checkpoint-connectionstring: <REPLACE BASE64 connection string>
+  eventhub-checkpoint-full-connectionstring: <REPLACE BASE64 eventhub connection string with appended string ;EntityPath=EVENTHUB_NAME>
