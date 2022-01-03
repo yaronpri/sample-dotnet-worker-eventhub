@@ -35,6 +35,11 @@ spec:
             secretKeyRef:
               name: secrets-event-consumer
               key: blob-checkpoint-connectionstring
+        - name: EVENTHUB_FULL_CONNECTIONSTRING
+          valueFrom:
+            secretKeyRef:
+              name: secrets-event-consumer
+              key: blob-checkpoint-full-connectionstring
 ---
 apiVersion: v1
 kind: Secret
@@ -45,3 +50,4 @@ metadata:
 data:
   eventhub-connectionstring: <BASE64 connection string>
   blob-checkpoint-connectionstring: <BASE64 connection string>
+  blob-checkpoint-full-connectionstring: <BASE64 eventhub connection string with appended string ;EntityPath=EVENTHUB_NAME>
