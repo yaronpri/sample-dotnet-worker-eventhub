@@ -20,16 +20,16 @@ spec:
         - name: GLOBAL_AUTH_MODE
           value: "ConnectionString"
         - name: EVENTHUB_CONSUMERGROUP
-          value: "$Default"
+          value: "<CONSUMER GROUP NAME>"
         - name: EVENTHUB_NAME
-          value: "incming-test"
+          value: "<EVENTHUB NAME>"
         - name: EVENTHUB_CONNECTIONSTRING
           valueFrom:
             secretKeyRef:
              name: secrets-event-consumer
              key: eventhub-connectionstring
         - name: BLOB_CHECKPOINT_CONTAINERNAME
-          value: checkpointnew
+          value: "<BLOB CONTAINER NAME>"
         - name: BLOB_CHECKPOINT_CONNECTIONSTRING
           valueFrom:
             secretKeyRef:
