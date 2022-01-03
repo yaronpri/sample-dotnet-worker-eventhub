@@ -1,0 +1,2 @@
+﻿1. build docker image by executing: docker build -t <your registry/your image name> .
+2. execute the docker image by executing: docker run -d -p 8001:80 -e GLOBAL_AUTH_MODE=ConnectionString -e EVENTHUB_CONSUMERGROUP="<consumer group name, e.g. \$Default" -e EVENTHUB_NAME="<eventhub name>" -e EVENTHUB_CONNECTIONSTRING="<event hub connection string>" -e BLOB_CHECKPOINT_CONTAINERNAME="<container name>" -e BLOB_CHECKPOINT_CONNECTIONSTRING="<blob checkpoint connection string>" <your registry name/your image name>

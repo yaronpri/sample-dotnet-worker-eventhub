@@ -56,7 +56,7 @@ namespace Keda.Samples.Dotnet.EventHub.OrderProcessor
             {
                 case AuthenticationMode.ConnectionString:
                     Logger.LogInformation($"Authentication by using connection string");
-                    eventHubClient = EventHubClientFactory.CreateWithConnectionStringAuthentication(Configuration);
+                    eventHubClient = EventHubClientFactory.CreateWithConnectionStringAuthentication(Configuration, Logger);
                     break;
                 case AuthenticationMode.ServicePrinciple:
                     Logger.LogInformation("Authentication by using service principle");
