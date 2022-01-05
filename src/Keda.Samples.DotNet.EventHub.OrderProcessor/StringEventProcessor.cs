@@ -17,7 +17,7 @@ namespace Keda.Samples.DotNet.EventHub.OrderProcessor
 
         protected override async Task ProcessEvent(string eventBody, string messageId, IEnumerable<KeyValuePair<string, object>> userProperties, CancellationToken cancellationToken)
         {
-            Logger.LogInformation("Message Id {MessageId} - Processing event: {eventBody} ", eventBody);
+            Logger.LogInformation("Message Id {MessageId} - Processing event: {eventBody} ", messageId, eventBody);
 
             await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationToken);
 
